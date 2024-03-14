@@ -1,5 +1,5 @@
 const dotenv =require('dotenv');
-const createConnection =require('mysql2');
+const createConnection =require('mysql');
 dotenv.config();
 const db = createConnection({
     host: process.env.HOST,
