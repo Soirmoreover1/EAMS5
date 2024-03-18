@@ -84,11 +84,6 @@ exports.validateCreateCompany = [
     .withMessage('Manager name is required')
     .isLength({ max: 255 })
    .withMessage('Manager name must be less than or equal to 255 characters'),
-  check('tax_number')
-    .notEmpty()
-    .withMessage('Tax number is required')
-    .isLength({ max: 255 })
-    .withMessage('Tax number must be less than or equal to 255 characters'),
   check('website')
     .notEmpty()
     .withMessage('Website is required')
@@ -117,7 +112,7 @@ exports.validateCreateCompany = [
 ];
 
 exports.validateCreateShift = [
-  check('shift_name')
+  check('name')
     .notEmpty()
     .withMessage('Shift name is required')
     .isLength({ min: 3, max: 255 })
@@ -245,16 +240,16 @@ exports.validateCreateAttendance = [
     .withMessage('Time out is required')
     .custom((value) => isValidTimeFormat(value, 'hh:mm'))
     .withMessage('Time must be in the format HH:mm'),
-  check('total_hours_worked')
+  check('total_hours_working')
     .notEmpty()
-    .withMessage('Total hours worked is required')
-    .isFloat()
-    .withMessage('Total hours worked must be a float number'),
+    .withMessage('Total hours working is required')
+    .isInt()
+    .withMessage('Total hours worked must be a int number'),
   check('overtime_hours')
     .notEmpty()
     .withMessage('Overtime hours is required')
-    .isFloat()
-    .withMessage('Overtime hours must be a float number'),
+    .isInt()
+    .withMessage('Overtime hours must be a int number'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -299,15 +294,15 @@ exports.validateCreateLeave = [
     .isLength({ min: 3, max: 255 })
     .withMessage('Type of leave must be at least 3 characters long and no more than 255 characters long'),
   check('start_date')
-    .notEmpty()
-    .withMessage('Start date is required')
-    .custom((value) => isValidTimeFormat(value, 'hh:mm'))
-    .withMessage('Time must be in the format HH:mm'),
+  .notEmpty()
+  .withMessage('Date is required')
+  .isISO8601('yyyy-mm-dd')
+  .custom(isValidDateFormat).withMessage('date must be in the format yyyy:mm:dd'),
   check('end_date')
-    .notEmpty()
-    .withMessage('End date is required')
-    .custom((value) => isValidTimeFormat(value, 'hh:mm'))
-    .withMessage('Time must be in the format HH:mm'),
+  .notEmpty()
+  .withMessage('Date is required')
+  .isISO8601('yyyy-mm-dd')
+  .custom(isValidDateFormat).withMessage('date must be in the format yyyy:mm:dd'),
   check('duration')
     .notEmpty()
     .withMessage('Duration is required')
@@ -331,23 +326,16 @@ exports.validateCreateEmployeePositionHistory = [
     .isLength({ min: 3, max: 255 })
     .withMessage('Position must be at least 3 characters long and no more than 255 characters long'),
   
-  check('salary')
-    .notEmpty()
-    .withMessage('Salary is required')
-    .isFloat()
-    .withMessage('Salary must be a float number'),
-  
   check('start_date')
-    .notEmpty()
-    .withMessage('Start date is required')
-    .custom((value) => isValidTimeFormat(value, 'hh:mm'))
-    .withMessage('Time must be in the format HH:mm'),
-
+  .notEmpty()
+  .withMessage('Date is required')
+  .isISO8601('yyyy-mm-dd')
+  .custom(isValidDateFormat).withMessage('Hire date must be in the format yyyy-mm-dd'),
   check('end_date')
   .notEmpty()
-  .withMessage('Start date is required')
-  .custom((value) => isValidTimeFormat(value, 'hh:mm'))
-  .withMessage('Time must be in the format HH:mm'),
+  .withMessage('Date is required')
+  .isISO8601('yyyy-mm-dd')
+  .custom(isValidDateFormat).withMessage('Hire date must be in the format yyyy-mm-dd'),
 
   (req, res, next) => {
     const errors = validationResult(req);
@@ -364,7 +352,7 @@ exports.validateCreateEmployeePositionHistory = [
 
 exports.validateCreatePromotion = [
  
-  check('promotion_date')
+  check('date')
     .notEmpty()
     .withMessage('Promotion date is required')
     .isISO8601('yyyy-mm-dd')
@@ -380,11 +368,11 @@ exports.validateCreatePromotion = [
     .withMessage('New position is required')
     .isLength({ min: 3, max: 255 })
     .withMessage('New position must be at least 3 characters long and no more than 255 characters long'),
-  check('salary_increase')
+  check('salary_increasing')
     .notEmpty()
     .withMessage('Salary increase is required')
-    .isFloat()
-    .withMessage('Salary increase must be a float number'),
+    .isInt()
+    .withMessage('Salary increase must be a int number'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

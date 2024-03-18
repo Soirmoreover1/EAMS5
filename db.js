@@ -1,17 +1,26 @@
-const dotenv =require('dotenv');
-const createConnection =require('mysql');
+const dotenv = require('dotenv');
+const mysql = require('mysql2/promise'); // Import promise-based version of mysql2
+
 dotenv.config();
-const db = createConnection({
+
+// Create a connection pool
+const pool = mysql.createPool({
     host: process.env.HOST,
     user: process.env.USER,
-    password:process.env.PASSWORD,
-    database: "eams5"
-})
-db.connect(function(err) {
-    if(err) {
-        console.log("connection error")
-    } else {
-        console.log("Connected successfully")
+    password: process.env.PASSWORD,
+    database: "eams"
+});
+
+// Get a connection from the pool
+const getConnection = async () => {
+    try {
+        return await pool.getConnection();
+    } catch (error) {
+        console.error("Error getting database connection:", error.message);
+        throw error;
     }
-})
-module.exports = db;
+};
+
+module.exports = {
+    getConnection
+};
