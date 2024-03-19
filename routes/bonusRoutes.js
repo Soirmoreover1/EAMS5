@@ -16,7 +16,7 @@ router.get('/showbonus', bonusController.getAllBonus);
 router.get('/showbonus/:id', bonusController.getBonusById);
 
 // Update a bonus record
-router.put('/edit/:id',validateCreateBonus, bonusController.updateBonus);
+router.put('/edit/:id', bonusController.updateBonus);
 
 // Delete a bonus record
 router.delete('/delete/:id', bonusController.deleteBonus);

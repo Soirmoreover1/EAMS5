@@ -15,7 +15,7 @@ router.get('/showpromotions', promotionController.getAllPromotions);
 router.get('/showpromotions/:id', promotionController.getPromotionById);
 
 // Update a promotion
-router.put('/edit/:id',validateCreatePromotion, promotionController.updatePromotion);
+router.put('/edit/:id', promotionController.updatePromotion);
 
 // Delete a promotion
 router.delete('/delete/:id', promotionController.deletePromotion);

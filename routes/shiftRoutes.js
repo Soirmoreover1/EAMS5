@@ -16,7 +16,7 @@ router.get('/showshifts', shiftController.getAllShifts);
 router.get('/showshifts/:id', shiftController.getShiftById);
 
 // Update a shift
-router.put('/edit/:id',validateCreateShift, shiftController.updateShift);
+router.put('/edit/:id', shiftController.updateShift);
 
 // Delete a shift
 router.delete('/delete/:id', shiftController.deleteShift);

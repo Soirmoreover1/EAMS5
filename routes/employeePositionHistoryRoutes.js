@@ -16,7 +16,7 @@ router.get('/showemployeepositionhistory', employeepositionhistoryController.get
 router.get('/showemployeepositionhistory/:id', employeepositionhistoryController.getEmployeePositionHistoryById);
 
 // Update an employee position history
-router.put('/edit/:id',validateCreateEmployeePositionHistory, employeepositionhistoryController.updateEmployeePositionHistory);
+router.put('/edit/:id', employeepositionhistoryController.updateEmployeePositionHistory);
 
 // Delete an employee position history
 router.delete('/delete/:id', employeepositionhistoryController.deleteEmployeePositionHistory);

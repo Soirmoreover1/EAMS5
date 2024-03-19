@@ -20,8 +20,17 @@ exports.validateUser = [
     .notEmpty()
     .withMessage('Username is required')
     .isLength({ min: 3, max: 20 })
-    .withMessage('Username must be between 3 and 20 characters'),
-    
+    .withMessage('Username must be between 3 and 20 characters')
+    .custom(async (value) => {
+      const connection = await db.getConnection();
+      const [existinguser] = await connection.query('SELECT * FROM account WHERE username = ?', [value]);
+      connection.release();
+      if (existinguser.length > 0) {
+          throw new Error('username is already used');
+      }
+      // Otherwise, return true to indicate validation success
+      return true;
+  }),
   check('password')
     .notEmpty()
     .withMessage('Password is required')
@@ -41,7 +50,7 @@ exports.validateUser = [
   },
 ];
 
-exports.validateAuth = [
+exports.validateAuther = [
   check('username')
     .notEmpty()
     .withMessage('Username is required')
@@ -65,6 +74,7 @@ exports.validateAuth = [
     next();
   },
 ];
+
 
 exports.validateCreateCompany = [
   check('name')

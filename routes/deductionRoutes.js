@@ -16,7 +16,7 @@ router.get('/showdeductions', deductionController.getAllDeductions);
 router.get('/showdeductions/:id', deductionController.getDeductionById);
 
 // Update a deduction record
-router.put('/edit/:id', validateCreateDeduction,deductionController.updateDeduction);
+router.put('/edit/:id',deductionController.updateDeduction);
 
 // Delete a deduction record
 router.delete('/delete/:id', deductionController.deleteDeduction);

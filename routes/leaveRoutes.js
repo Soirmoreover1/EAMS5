@@ -16,7 +16,7 @@ router.get('/showleaves', leaveController.getAllLeaves);
 router.get('/showleaves/:id', leaveController.getLeaveById);
 
 // Update a leave
-router.put('/edit/:id',validateCreateLeave, leaveController.updateLeave);
+router.put('/edit/:id', leaveController.updateLeave);
 
 // Delete a leave
 router.delete('/delete/:id', leaveController.deleteLeave);

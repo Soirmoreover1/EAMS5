@@ -43,12 +43,11 @@ const login = async (req, res) => {
         res.status(500).json({ error: 'Failed to log in' });
     }
 };
-
 const logout = (req, res) => {
     try {
         // Clear the token cookie on logout
         res.clearCookie('token');
-        res.status(204).end();
+        res.status(204).send("Logout successfully");
     } catch (error) {
         console.error('Error logging out:', error);
         res.status(500).json({ error: 'Failed to log out' });

@@ -15,7 +15,7 @@ router.get('/showattendances', attendanceController.getAllAttendance);
 router.get('/showattendances/:id', attendanceController.getAttendanceById);
 
 // Update an attendance record
-router.put('/edit/:id',validateCreateAttendance, attendanceController.updateAttendance);
+router.put('/edit/:id', attendanceController.updateAttendance);
 
 // Delete an attendance record
 router.delete('/delete/:id', attendanceController.deleteAttendance);

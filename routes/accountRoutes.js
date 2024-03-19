@@ -14,7 +14,7 @@ router.get('/accounts', accountController.getAllAccounts);
 router.get('/accounts/:id', accountController.getAccountById);
 
 // Update an account
-router.put('/accounts/:id', validateUser,accountController.updateAccount);
+router.put('/accounts/:id',accountController.updateAccount);
 
 // Delete an account
 router.delete('/accounts/:id', accountController.deleteAccount);

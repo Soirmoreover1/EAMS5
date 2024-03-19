@@ -16,7 +16,7 @@ router.get('/showcompanies', companyController.getAllCompanies);
 router.get('/showcompanies/:id', companyController.getCompanyById);
 
 // Update a company
-router.put('/edit/:id',validateCreateCompany, companyController.updateCompany);
+router.put('/edit/:id', companyController.updateCompany);
 
 // Delete a company
 router.delete('/delete/:id', companyController.deleteCompany);

@@ -16,7 +16,7 @@ router.get('/showdepartments', departmentController.getAllDepartments);
 router.get('/showdepartments/:id', departmentController.getDepartmentById);
 
 // Update a department
-router.put('/edit/:id',validateCreateDepartment, departmentController.updateDepartment);
+router.put('/edit/:id', departmentController.updateDepartment);
 
 // Delete a department
 router.delete('/delete/:id', departmentController.deleteDepartment);

@@ -16,7 +16,7 @@ router.get('/showemployees', employeeController.getAllEmployees);
 router.get('/showemployees/:id', employeeController.getEmployeeById);
 
 // Update an employee
-router.put('/edit/:id',validateCreateEmployee, employeeController.updateEmployee);
+router.put('/edit/:id', employeeController.updateEmployee);
 
 // Delete an employee
 router.delete('/delete/:id', employeeController.deleteEmployee);
