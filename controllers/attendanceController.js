@@ -77,13 +77,13 @@ const updateAttendance = async (req, res) => {
 // Delete an attendance record
 const deleteAttendance = async (req, res) => {
   try {
-    const attendanceId = req.params.id;
     
     const connection = await db.getConnection();
-    const deleteAttendanceQuery = 'DELETE FROM attendance WHERE id = ?';
-    await connection.query(deleteAttendanceQuery, [attendanceId]);
+    const deleted =await connection.query('DELETE FROM attendance WHERE id = ?', [req.params.id]);
     connection.release();
-
+    if (deleted.affectedRows === 0) {
+      return res.status(404).json({ message: 'Department not found' });
+    }
     res.status(204).end();
   } catch (error) {
     res.status(500).json({ message: error.message });

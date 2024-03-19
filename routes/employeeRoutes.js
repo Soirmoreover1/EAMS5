@@ -10,7 +10,7 @@ router.post('/create',employeeController.upload.single('image'),validateCreateEm
 
 // Get all employees
 router.get('/showemployees', employeeController.getAllEmployees);
-router.get('/allshowemployees', employeeController.getAllEmployeesWithDetails);
+//router.get('/allshowemployees', employeeController.getAllEmployeesWithDetails);
 
 // Get an employee by ID
 router.get('/showemployees/:id', employeeController.getEmployeeById);
@@ -20,5 +20,28 @@ router.put('/edit/:id',validateCreateEmployee, employeeController.updateEmployee
 
 // Delete an employee
 router.delete('/delete/:id', employeeController.deleteEmployee);
+
+
+router.param('companyId', async (req, res, next, companyId) => {
+    try {
+        const employees = await employeeController.getCompanyEmployees(companyId);
+        req.employees = employees;
+        next(); // Proceed to the route handler
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(404);
+    }
+});
+
+router.get('/:companyId', (req, res, next) => {
+    res.status(200).json({ employees: req.employees });
+});
+
+
+
+
+
+
+
 
 module.exports = router;

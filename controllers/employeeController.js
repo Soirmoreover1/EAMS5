@@ -32,12 +32,12 @@ const createEmployee = async (req, res) => {
         if (req.file) {
             image = req.file.path;
         }
-        const { name, departmentid, shiftid, hire_date, accountid } = req.body;
+        const { name, departmentid, shiftid, hire_date, accountid,company_id } = req.body;
         const connection = await db.getConnection();
-        const result = await connection.query('INSERT INTO employee (name, departmentid, shiftid, hire_date, image, accountid) VALUES (?, ?, ?, ?, ?, ?)', [name, departmentid, shiftid, hire_date, image, accountid]);
+        const result = await connection.query('INSERT INTO employee (name, departmentid, shiftid, hire_date,company_id, image, accountid) VALUES (?,?, ?, ?, ?, ?, ?)', [name, departmentid, shiftid, hire_date,company_id, image ,accountid]);
         const employee = await connection.query('SELECT * FROM employee WHERE id = ?', [result.insertId]);
         connection.release();
-        res.status(201).json(employee[0]); // Send the created employee details in the response
+        res.status(201).json({ message: 'Employee created successfully', employeeId: result.insertId });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -78,19 +78,22 @@ const updateEmployee = async (req, res) => {
         if (req.file) {
             image = req.file.path;
         }
-        const {name, departmentid, shiftid, hire_date,  accountid } = req.body;
+        const { name, departmentid, shiftid, hire_date, accountid } = req.body;
         const connection = await db.getConnection();
-        await connection.query('UPDATE employee SET name = ?, departmentid = ?, shiftid = ?, hire_date = ?, image = ?, accountid = ? WHERE id = ?', [name, departmentid, shiftid, hire_date, image, accountid, req.params.id]);
+        const result = await connection.query('UPDATE employee SET name = ?, departmentid = ?, shiftid = ?, hire_date = ?, image = ?, accountid = ? WHERE id = ?', [name, departmentid, shiftid, hire_date, image, accountid, req.params.id]);
         const updatedEmployee = await connection.query('SELECT * FROM employee WHERE id = ?', [req.params.id]);
         connection.release();
+        
         if (!updatedEmployee.length) {
             return res.status(404).json({ message: 'Employee not found' });
-        }
-        res.status(200).json(updatedEmployee[0]);
+        }        
+        // Send success message
+        res.status(200).json({ message: 'Employee updated successfully'});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 // Delete an employee
 const deleteEmployee = async (req, res) => {
@@ -98,34 +101,68 @@ const deleteEmployee = async (req, res) => {
         const connection = await db.getConnection();
         const deleted = await connection.query('DELETE FROM employee WHERE id = ?', [req.params.id]);
         connection.release();
-        if (deleted.affectedRows===0) {
+        if (deleted.affectedRows === 0) {
             return res.status(404).json({ message: 'Employee not found' });
         }
-        res.status(204).end();
+        // Send success message
+        res.status(200).json({ message: 'Employee deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-const getAllEmployeesWithDetails = async (req, res) => {
-    try {
-      const query = `
-        SELECT e.*, a.username AS account_username, c.name
-        FROM employee e
-        LEFT JOIN account a ON e.accountid = a.id
-        LEFT JOIN companies c ON e.company_id = c.id;
-      `;
-      const connection = await db.getConnection();
 
-      const employeesWithDetails = await connection.query(query);
-      connection.release();
-
-      res.status(200).json(employeesWithDetails);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  };
   
+
+
+// Middleware to get employees of a specific company
+
+const getCompanyEmployees = async (companyId) => {
+    try {
+        const connection = await db.getConnection();
+        const [employees] = await connection.query(`
+            SELECT 
+                e.name,
+                e.hire_date,
+                e.image,
+                d.name AS department_name, 
+                s.name AS shift_name, 
+                c.name AS company_name, 
+                c.manager AS company_manager
+            FROM 
+                employee e 
+            INNER JOIN 
+                companies c 
+            ON 
+                e.company_id = c.id 
+            INNER JOIN 
+                department d 
+            ON 
+                e.departmentid = d.id 
+            INNER JOIN 
+                shift s 
+            ON 
+                e.shiftid = s.id 
+            WHERE 
+                e.company_id = ?`, 
+            [companyId]
+        );
+        connection.release();
+        return employees;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+  
+
+
+
+
+
+
+
 module.exports = {
     createEmployee,
     getAllEmployees,
@@ -133,5 +170,5 @@ module.exports = {
     updateEmployee,
     deleteEmployee,
     upload,
-    getAllEmployeesWithDetails,
+    getCompanyEmployees,
 };

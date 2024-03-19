@@ -8,12 +8,28 @@ const createDepartment = async (req, res) => {
     const result = await connection.query('INSERT INTO department (name, companyid) VALUES (?, ?)', [name,  companyid]);
     const department = await connection.query('SELECT * FROM department WHERE id = ?', [result.insertId]);
     connection.release();
-    res.status(201).json(department[0]);
+    res.status(201).json({ message: 'Department created successfully', department: department[0] });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+// Update a department
+const updateDepartment = async (req, res) => {
+  try {
+    const { name, companyid } = req.body;
+    const connection = await db.getConnection();
+    await connection.query('UPDATE department SET name = ?,  companyid = ? WHERE id = ?', [name,  companyid, req.params.id]);
+    const updatedDepartment = await connection.query('SELECT * FROM department WHERE id = ?', [req.params.id]);
+    connection.release();
+    if (!updatedDepartment.length) {
+      return res.status(404).json({ message: 'Department not found' });
+    }
+    res.status(200).json({ message: 'Department updated successfully', department: updatedDepartment[0] });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 // Get all departments
 const getAllDepartments = async (req, res) => {
   try {
@@ -41,33 +57,16 @@ const getDepartmentById = async (req, res) => {
   }
 };
 
-// Update a department
-const updateDepartment = async (req, res) => {
-  try {
-    const { name, companyid } = req.body;
-    const connection = await db.getConnection();
-    await connection.query('UPDATE department SET name = ?,  companyid = ? WHERE id = ?', [name,  companyid, req.params.id]);
-    const updatedDepartment = await connection.query('SELECT * FROM department WHERE id = ?', [req.params.id]);
-    connection.release();
-    if (!updatedDepartment.length) {
-      return res.status(404).json({ message: 'Department not found' });
-    }
-    res.status(200).json(updatedDepartment[0]);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 // Delete a department
 const deleteDepartment = async (req, res) => {
   try {
     const connection = await db.getConnection();
     const deleted = await connection.query('DELETE FROM department WHERE id = ?', [req.params.id]);
     connection.release();
-    if (deleted.affectedRows===0) {
+    if (deleted.affectedRows === 0) {
       return res.status(404).json({ message: 'Department not found' });
     }
-    res.status(204).end();
+    res.status(204).json({ message: 'Department deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

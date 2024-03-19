@@ -14,6 +14,39 @@ const createSalary = async (req, res) => {
   }
 };
 
+// Update a salary record
+const updateSalary = async (req, res) => {
+  try {
+    const { employeeid, gross_salary, net_salary, date } = req.body;
+    const connection = await db.getConnection();
+    await connection.query('UPDATE salary SET employeeid = ?, gross_salary = ?, net_salary = ?, date = ? WHERE id = ?', [employeeid, gross_salary, net_salary, date, req.params.id]);
+    const updatedSalary = await connection.query('SELECT * FROM salary WHERE id = ?', [req.params.id]);
+    connection.release();
+    if (!updatedSalary.length) {
+      return res.status(404).json({ message: 'Salary record not found' });
+    }
+    res.status(200).json({ message: 'Salary record updated successfully', updatedSalary: updatedSalary[0] });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Delete a salary record
+const deleteSalary = async (req, res) => {
+  try {
+    const connection = await db.getConnection();
+    const deleted = await connection.query('DELETE FROM salary WHERE id = ?', [req.params.id]);
+    connection.release();
+    if (deleted.affectedRows === 0) {
+      return res.status(404).json({ message: 'Salary record not found' });
+    }
+    res.status(204).json({ message: 'Salary record deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // Get all salary records
 const getAllSalaries = async (req, res) => {
   try {
@@ -41,37 +74,6 @@ const getSalaryById = async (req, res) => {
   }
 };
 
-// Update a salary record
-const updateSalary = async (req, res) => {
-  try {
-    const { employeeid, gross_salary, net_salary, date } = req.body;
-    const connection = await db.getConnection();
-    await connection.query('UPDATE salary SET employeeid = ?, gross_salary = ?, net_salary = ?, date = ? WHERE id = ?', [employeeid, gross_salary, net_salary, date, req.params.id]);
-    const updatedSalary = await connection.query('SELECT * FROM salary WHERE id = ?', [req.params.id]);
-    connection.release();
-    if (!updatedSalary.length) {
-      return res.status(404).json({ message: 'Salary record not found' });
-    }
-    res.status(200).json(updatedSalary[0]);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Delete a salary record
-const deleteSalary = async (req, res) => {
-  try {
-    const connection = await db.getConnection();
-    const deleted = await connection.query('DELETE FROM salary WHERE id = ?', [req.params.id]);
-    connection.release();
-    if (deleted.affectedRows===0) {
-      return res.status(404).json({ message: 'Salary record not found' });
-    }
-    res.status(204).end();
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 module.exports = {
   createSalary,

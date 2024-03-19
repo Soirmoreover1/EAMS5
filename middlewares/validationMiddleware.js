@@ -20,8 +20,8 @@ exports.validateUser = [
     .notEmpty()
     .withMessage('Username is required')
     .isLength({ min: 3, max: 20 })
-    .withMessage('Username must be between 3 and 20 characters')
-    ,
+    .withMessage('Username must be between 3 and 20 characters'),
+    
   check('password')
     .notEmpty()
     .withMessage('Password is required')
@@ -46,14 +46,7 @@ exports.validateAuth = [
     .notEmpty()
     .withMessage('Username is required')
     .isLength({ min: 3, max: 20 })
-    .withMessage('Username must be between 3 and 20 characters')
-    .custom((value) => {
-      return db.user.findOne({ where: { username: value } }).then((user) => {
-        if (!user) {
-          return Promise.reject('Invalid username or password');
-        }
-      });
-    }),
+    .withMessage('Username must be between 3 and 20 characters'),
   check('password')
     .notEmpty()
     .withMessage('Password is required')
@@ -78,12 +71,35 @@ exports.validateCreateCompany = [
     .notEmpty()
     .withMessage('Company name is required')
     .isLength({ max: 255 })
-    .withMessage('Company name must be less than or equal to 255 characters'),
+    .withMessage('Company name must be less than or equal to 255 characters') 
+    .custom(async (value) => {
+      // Check if the shift name already exists in the database
+      const connection = await db.getConnection();
+      const [existingcompany] = await connection.query('SELECT * FROM companies WHERE name = ?', [value]);
+      connection.release();
+      // If the shift name already exists, return false to indicate validation failure
+      if (existingcompany.length > 0) {
+          throw new Error('companies name is already used');
+      }
+      // Otherwise, return true to indicate validation success
+      return true;
+  }),
   check('manager')
     .notEmpty()
     .withMessage('Manager name is required')
     .isLength({ max: 255 })
-   .withMessage('Manager name must be less than or equal to 255 characters'),
+   .withMessage('Manager name must be less than or equal to 255 characters') .custom(async (value) => {
+    // Check if the manager name already exists in the database
+    const connection = await db.getConnection();
+    const [existingcompany] = await connection.query('SELECT * FROM companies WHERE name = ?', [value]);
+    connection.release();
+    // If the shift name already exists, return false to indicate validation failure
+    if (existingcompany.length > 0) {
+        throw new Error('manager name is already used');
+    }
+    // Otherwise, return true to indicate validation success
+    return true;
+}),
   check('website')
     .notEmpty()
     .withMessage('Website is required')
@@ -116,7 +132,21 @@ exports.validateCreateShift = [
     .notEmpty()
     .withMessage('Shift name is required')
     .isLength({ min: 3, max: 255 })
-    .withMessage('Shift name must be between 3 and 255 characters'),
+    .withMessage('Shift name must be between 3 and 255 characters')
+    .custom(async (value) => {
+      // Check if the shift name already exists in the database
+      const connection = await db.getConnection();
+      const [existingShift] = await connection.query('SELECT * FROM shift WHERE name = ?', [value]);
+      connection.release();
+
+      // If the shift name already exists, return false to indicate validation failure
+      if (existingShift.length > 0) {
+          throw new Error('Shift name is already used');
+      }
+
+      // Otherwise, return true to indicate validation success
+      return true;
+  }),
   check('start_time')
     .notEmpty()
     .withMessage('Start time is required')
@@ -178,8 +208,19 @@ exports.validateCreateDepartment = [
     .notEmpty()
     .withMessage('Department name is required')
     .isLength({ min: 3, max: 255 })
-    .withMessage('Department name must be between 3 and 255 characters'),
- 
+    .withMessage('Department name must be between 3 and 255 characters')
+    .custom(async (value) => {
+      // Check if the shift name already exists in the database
+      const connection = await db.getConnection();
+      const [existingdepa] = await connection.query('SELECT * FROM department WHERE name = ?', [value]);
+      connection.release();
+      // If the shift name already exists, return false to indicate validation failure
+      if (existingdepa.length > 0) {
+          throw new Error('department name is already used');
+      }
+      // Otherwise, return true to indicate validation success
+      return true;
+  }),
   
   (req, res, next) => {
     const errors = validationResult(req);
@@ -267,7 +308,19 @@ exports.validateCreateEmployee = [
     .notEmpty()
     .withMessage('Name is required')
     .isLength({ min: 3 })
-    .withMessage('Name must be at least 3 characters long'),
+    .withMessage('Name must be at least 3 characters long')
+    .custom(async (value) => {
+      // Check if the shift name already exists in the database
+      const connection = await db.getConnection();
+      const [existingemplo] = await connection.query('SELECT * FROM employee WHERE name = ?', [value]);
+      connection.release();
+      // If the shift name already exists, return false to indicate validation failure
+      if (existingemplo.length > 0) {
+          throw new Error('employee name is already used');
+      }
+      // Otherwise, return true to indicate validation success
+      return true;
+  }),
   check('hire_date')
     .notEmpty()
     .withMessage('Hire date is required')

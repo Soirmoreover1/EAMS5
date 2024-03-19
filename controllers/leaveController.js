@@ -8,7 +8,7 @@ const createLeave = async (req, res) => {
     const result = await connection.query('INSERT INTO `leave` (employeeid, type_of_leave, start_date, end_date, duration) VALUES (?, ?, ?, ?, ?)', [employeeid, type_of_leave, start_date, end_date, duration]);
     const leave = await connection.query('SELECT * FROM `leave` WHERE id = ?', [result.insertId]);
     connection.release();
-    res.status(201).json(leave[0]);
+    res.status(201).json({ message: 'Leave created successfully', leave: leave[0] });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -52,7 +52,7 @@ const updateLeave = async (req, res) => {
     if (!updatedLeave.length) {
       return res.status(404).json({ message: 'Leave not found' });
     }
-    res.status(200).json(updatedLeave[0]);
+    res.status(200).json({ message: 'Leave updated successfully', leave: updatedLeave[0] });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -67,7 +67,7 @@ const deleteLeave = async (req, res) => {
     if (deleted.affectedRows === 0) {
       return res.status(404).json({ message: 'Leave not found' });
     }
-    res.status(204).end();
+    res.status(204).json({ message: 'Leave deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

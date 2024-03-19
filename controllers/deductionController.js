@@ -73,22 +73,22 @@ const updateDeduction = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 // Delete a deduction record
 const deleteDeduction = async (req, res) => {
   try {
-    const deductionId = req.params.id;
     
     const connection = await db.getConnection();
-    const deleteDeductionQuery = 'DELETE FROM deduction WHERE id = ?';
-    await connection.query(deleteDeductionQuery, [deductionId]);
+    const deleted = await connection.query('DELETE FROM deduction WHERE id = ?', [req.params.id]);
     connection.release();
-
-    res.status(204).end();
+    if (deleted.affectedRows === 0) {
+      return res.status(404).json({ message: 'Department not found' });
+    }
+    res.status(204).json({ message: 'Deduction record deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 module.exports = {
   createDeduction,
