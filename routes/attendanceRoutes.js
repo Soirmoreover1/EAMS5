@@ -20,4 +20,7 @@ router.put('/edit/:id', attendanceController.updateAttendance);
 // Delete an attendance record
 router.delete('/delete/:id', attendanceController.deleteAttendance);
 
+router.get('/search', attendanceController.searchAttendance);
+
+
 module.exports = router;

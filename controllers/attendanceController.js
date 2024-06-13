@@ -90,10 +90,45 @@ const deleteAttendance = async (req, res) => {
   }
 };
 
+const searchAttendance = async (req, res) => {
+  try {
+    const { name, date } = req.query;
+    let query = `
+      SELECT attendance.*, employee.name AS employee_name 
+      FROM attendance 
+      JOIN employee ON attendance.employeeid = employee.id 
+      WHERE 1=1
+    `;
+    let queryParams = [];
+
+    if (name) {
+      query += ' AND employee.name LIKE ?';
+      queryParams.push(`%${name}%`);
+    }
+    
+    if (date) {
+      query += ' AND attendance.date = ?';
+      queryParams.push(date);
+    }
+
+    const connection = await db.getConnection();
+    const [attendance] = await connection.query(query, queryParams);
+    connection.release();
+
+    res.status(200).json(attendance);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
 module.exports = {
   createAttendance,
   getAllAttendance,
   getAttendanceById,
   updateAttendance,
   deleteAttendance,
+  searchAttendance
 };

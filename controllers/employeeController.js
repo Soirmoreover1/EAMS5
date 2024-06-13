@@ -154,9 +154,32 @@ const getCompanyEmployees = async (companyId) => {
     }
 };
 
+// Search employees by name or hire date
+const searchEmployees = async (req, res) => {
+    try {
+        const { name, hire_date } = req.query;
+        let query = 'SELECT * FROM employee WHERE 1=1';
+        let queryParams = [];
 
-  
+        if (name) {
+            query += ' AND name LIKE ?';
+            queryParams.push(`%${name}%`);
+        }
 
+        if (hire_date) {
+            query += ' AND hire_date = ?';
+            queryParams.push(hire_date);
+        }
+
+        const connection = await db.getConnection();
+        const employees = await connection.query(query, queryParams);
+        connection.release();
+        
+        res.status(200).json(employees);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 
 
@@ -171,4 +194,5 @@ module.exports = {
     deleteEmployee,
     upload,
     getCompanyEmployees,
+    searchEmployees
 };

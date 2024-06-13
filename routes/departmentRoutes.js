@@ -21,4 +21,7 @@ router.put('/edit/:id', departmentController.updateDepartment);
 // Delete a department
 router.delete('/delete/:id', departmentController.deleteDepartment);
 
+router.get('/search', departmentController.searchDepartments);
+
+
 module.exports = router;

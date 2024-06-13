@@ -96,6 +96,77 @@ const deleteShift = async (req, res) => {
     }
   }
 };
+// Search shifts by name and get employees, departments, and companies
+const searchShifts = async (req, res) => {
+  let connection;
+  try {
+    const { name } = req.query;
+    connection = await db.getConnection();
+    const shifts = await connection.query(`
+      SELECT 
+        s.name AS shift_name, 
+        e.name AS employee_name, 
+        d.name AS department_name, 
+        c.name AS company_name
+      FROM 
+        shift s
+      LEFT JOIN 
+        employee e ON s.id = e.shiftid
+      LEFT JOIN 
+        department d ON e.departmentid = d.id
+      LEFT JOIN 
+        companies c ON d.companyid = c.id
+      WHERE 
+        s.name LIKE ?`, [`%${name}%`]);
+
+    if (!shifts.length) {
+      return res.status(404).json({ message: 'No shifts found' });
+    }
+
+    res.status(200).json(shifts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
+
+
+
+const getShiftEmployees = async (req, res) => {
+  const { shiftId } = req.params;
+  try {
+    const connection = await db.getConnection();
+    const [employees] = await connection.query(`
+      SELECT 
+        e.id, 
+        e.name, 
+        e.hire_date, 
+        e.image, 
+        d.name AS department_name, 
+        s.name AS shift_name
+      FROM 
+        employee e
+      INNER JOIN 
+        department d ON e.departmentid = d.id
+      INNER JOIN 
+        shift s ON e.shiftid = s.id
+      WHERE 
+        e.shiftid = ?
+    `, [shiftId]);
+    connection.release();
+    if (employees.length === 0) {
+      return res.status(404).json({ message: 'No employees found for this shift' });
+    }
+    res.status(200).json(employees);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 
 module.exports = {
@@ -103,5 +174,8 @@ module.exports = {
   getAllShifts,
   getShiftById,
   updateShift,
-  deleteShift
+  deleteShift,
+  searchShifts,
+  getShiftEmployees
+
 };

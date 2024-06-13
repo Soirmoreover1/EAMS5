@@ -21,4 +21,9 @@ router.put('/edit/:id', shiftController.updateShift);
 // Delete a shift
 router.delete('/delete/:id', shiftController.deleteShift);
 
+router.get('/shift/:shiftId', shiftController.getShiftEmployees);
+
+router.get('/search',shiftController.searchShifts);
+
+
 module.exports = router;

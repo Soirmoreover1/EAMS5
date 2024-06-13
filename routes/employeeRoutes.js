@@ -21,6 +21,8 @@ router.put('/edit/:id', employeeController.updateEmployee);
 // Delete an employee
 router.delete('/delete/:id', employeeController.deleteEmployee);
 
+router.get('/search', employeeController.searchEmployees);
+
 
 router.param('companyId', async (req, res, next, companyId) => {
     try {
